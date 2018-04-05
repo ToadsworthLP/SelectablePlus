@@ -55,7 +55,7 @@ public class SelectableGroupEditor : Editor
 
     private void DrawCustomInspector() {
         if (group.options.Count < 2) {
-            EditorGUILayout.HelpBox("This group is empty. Please add options to it by creating child objects with an attached script inheriting from SelectableOptionBase!", MessageType.Error);
+            EditorGUILayout.HelpBox("This group contains less than 2 options. Please add options to it by creating child objects with an attached script inheriting from SelectableOptionBase!", MessageType.Error);
             return;
         } else {
             EditorGUILayout.HelpBox("This group contains " + group.options.Count + " options.", MessageType.Info);
