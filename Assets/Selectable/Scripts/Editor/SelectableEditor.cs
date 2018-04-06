@@ -134,14 +134,10 @@ public class SelectableGroupEditor : Editor
                 RaycastHit2D hit = Physics2D.Raycast(GetRaycastOrigin(direction, optionRectTransform), GetRaycastVector(direction), maxSearchDistances[j]);
 
                 if(hit.transform != null){
-                    Debug.Log("Hit! " + hit.transform.gameObject.name.ToString());
-
                     SelectableOptionBase hitOption = hit.transform.GetComponent<SelectableOptionBase>();
                     if (hitOption != null) {
                         options[i].SetNextOption(direction, hitOption);
                     }
-                }else{
-                    Debug.Log("Skipped " + options[i].name + "Direction " + direction.ToString());
                 }
             }
         }

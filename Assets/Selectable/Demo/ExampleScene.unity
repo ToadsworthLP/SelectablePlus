@@ -733,6 +733,7 @@ MonoBehaviour:
   - {fileID: 0}
   optionPositionOffset: {x: -333.01, y: 13.6, z: 0}
   targetGroup: {fileID: 898220618}
+  incognitoMode: 0
 --- !u!1 &898220616
 GameObject:
   m_ObjectHideFlags: 0
@@ -784,6 +785,7 @@ MonoBehaviour:
   options:
   - {fileID: 940453609}
   - {fileID: 1029829957}
+  - {fileID: 0}
   navigationType: 1
 --- !u!1 &940453608
 GameObject:
@@ -911,7 +913,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1028501470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2029,7 +2031,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1686934636
 MonoBehaviour:
   m_ObjectHideFlags: 0

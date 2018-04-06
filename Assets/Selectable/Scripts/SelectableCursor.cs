@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class SelectableCursor : MonoBehaviour
 {
@@ -20,9 +21,9 @@ public class SelectableCursor : MonoBehaviour
     //Holds the currently selected option and its transform
     private SelectableOptionBase currentlySelectedOption;
 
-    //Holds the previously selected option and group before entering a new group
-    private SelectableGroup previousGroup;
-    private SelectableOptionBase previousOption;
+    //Holds the group history and the last selected option before leaving the group
+    private Stack<SelectableGroup> groupHistory;
+    private Stack<SelectableOptionBase> optionHistory;
 
     //Movement animation settings
     public float smoothingTime = 0.1f;
@@ -36,10 +37,13 @@ public class SelectableCursor : MonoBehaviour
     /// </summary>
     /// <param name="group">The SelectableGroup to enter</param>
     /// <param name="selectOption">The option to select after entering the group (instead of the group's first option)</param>
-    public void EnterGroup(SelectableGroup group, SelectableOptionBase selectOption = null) {
+    /// <param name="incognitoMode">If set to true, the group change won't be recorded in the group history and option history stacks</param>
+    public void EnterGroup(SelectableGroup group, SelectableOptionBase selectOption = null, bool incognitoMode = false) {
         if (group != null) {
-            previousGroup = currentGroup;
-            previousOption = currentlySelectedOption;
+            if(!incognitoMode){
+                groupHistory.Push(currentGroup);
+                optionHistory.Push(currentlySelectedOption);
+            }
 
             currentGroup = group;
 
@@ -68,10 +72,16 @@ public class SelectableCursor : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns to the previously selected group and option before the current group was entered.
+    /// Returns to the previously selected group and option before the current group was entered, as recorded in the group history.
     /// </summary>
     public void ReturnToPreviousGroup() {
-        EnterGroup(previousGroup, previousOption);
+        if(groupHistory.Count < 1){
+            return;
+        }
+
+        EnterGroup(groupHistory.Pop(), optionHistory.Pop());
+        groupHistory.Pop();
+        optionHistory.Pop();
     }
 
     private void Awake() {
@@ -80,6 +90,9 @@ public class SelectableCursor : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
+
+        groupHistory = new Stack<SelectableGroup>();
+        optionHistory = new Stack<SelectableOptionBase>();
 
         currentGroup = firstGroup;
         currentlySelectedOption = firstGroup.GetFirstOption();
