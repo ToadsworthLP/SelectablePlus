@@ -295,6 +295,7 @@
     <Compile Include="Assets\Selectable\Scripts\Examples\SelectableGroupEnter.cs" />
     <Compile Include="Assets\Selectable\Scripts\SelectableCursor.cs" />
     <Compile Include="Assets\Selectable\Scripts\SelectableGroup.cs" />
+    <Compile Include="Assets\Selectable\Scripts\SelectableNavigationBuilder.cs" />
     <Compile Include="Assets\Selectable\Scripts\SelectableOptionBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

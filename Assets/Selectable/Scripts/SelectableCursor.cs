@@ -31,6 +31,9 @@ public class SelectableCursor : MonoBehaviour
     //Holds the current cursor animation movement speed, used for smoothdamping positions
     private Vector3 currentAnimationVelocity;
 
+    //Holds the currently presed button
+    private SelectableNavigationDirection currentDirection;
+
 
     /// <summary>
     /// Enters the given SelectableGroup.
@@ -99,9 +102,9 @@ public class SelectableCursor : MonoBehaviour
     }
 
     private void Update() {
-        SelectableNavigationDirection direction = GetPressedDirection();
-        if (!direction.Equals(SelectableNavigationDirection.NONE) && currentlySelectedOption.GetNextOption(direction) != null) {
-            SelectOption(currentlySelectedOption.GetNextOption(direction));
+        currentDirection = GetPressedDirection();
+        if (!currentDirection.Equals(SelectableNavigationDirection.NONE) && currentlySelectedOption.GetNextOption(currentDirection) != null) {
+            SelectOption(currentlySelectedOption.GetNextOption(currentDirection));
         }
 
         UpdatePosition(currentlySelectedOption.GetOptionPosition());
