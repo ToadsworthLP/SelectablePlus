@@ -1,11 +1,15 @@
-﻿using UnityEngine.Events;
+﻿using SelectablePlus;
+using UnityEngine.Events;
 
-public class SelectableEventTrigger : SelectableOptionBase
-{
+namespace SelectablePlus.Examples {
 
-    public UnityEvent OnOkPressed;
+    public class SelectableEventTrigger : SelectableOptionBase {
 
-    public override void OkPressed(SelectableCursor cursor) {
-        OnOkPressed.Invoke();
+        public UnityEvent OnOkPressed;
+
+        public override void OkPressed(SelectableCursor cursor) {
+            OnOkPressed.Invoke();
+        }
     }
+
 }

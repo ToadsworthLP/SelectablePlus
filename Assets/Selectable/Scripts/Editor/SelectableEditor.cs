@@ -2,6 +2,8 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using SelectablePlus.Navigation;
+using SelectablePlus;
 
 [CustomEditor(typeof(SelectableOptionBase), true)]
 [CanEditMultipleObjects]
@@ -64,7 +66,7 @@ public class SelectableGroupEditor : Editor
             EditorGUILayout.HelpBox("This group contains " + group.options.Count + " options.", MessageType.Info);
         }
 
-        if (group.navigationType == SelectableGroup.NavigationBuildType.SMART) {
+        if (group.navigationType == SelectableGroup.NavigationBuildType.RAYCAST) {
             EditorGUILayout.HelpBox("Please set the maximum distances to search for Selectable UI elements for each direction.", MessageType.Info);
 
             EditorGUILayout.BeginHorizontal();
@@ -93,19 +95,26 @@ public class SelectableGroupEditor : Editor
                 option.ResetOptions();
             }
 
+            ISelectableNavigationBuilder selectableNavigationBuilder;
+
             switch (group.navigationType) {
                 case SelectableGroup.NavigationBuildType.HORIZONTAL:
-                    SelectableNavigationBuilder.BuildNavigationByXCoord(group);
+                    selectableNavigationBuilder = new CoordinateNavigationBuilder(CoordinateNavigationBuilder.SORTING_AXIS.X);
                     break;
                 case SelectableGroup.NavigationBuildType.VERTICAL:
-                    SelectableNavigationBuilder.BuildNavigationByYCoord(group);
+                    selectableNavigationBuilder = new CoordinateNavigationBuilder(CoordinateNavigationBuilder.SORTING_AXIS.Y);
                     break;
-                case SelectableGroup.NavigationBuildType.SMART:
-                    SelectableNavigationBuilder.BuildSmartNavigation(group, maxSearchDistances);
+                case SelectableGroup.NavigationBuildType.RAYCAST:
+                    selectableNavigationBuilder = new RaycastNavigationBuilder(maxSearchDistances);
+                    break;
+                default:
+                    selectableNavigationBuilder = new SortedListNavigationBuilder();
                     break;
             }
+
+            selectableNavigationBuilder.buildNavigation(group);
         }
     }
 
-    
+
 }

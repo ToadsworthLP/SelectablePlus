@@ -1,36 +1,42 @@
-﻿using UnityEditor;
+﻿using SelectablePlus;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 
-public class SelectableCustomMenuItems{
+namespace SelectablePlus {
 
-    [MenuItem("GameObject/Selectable/Selectable Group", false, 0)]
-    private static void CreateSelectableGroup() {
-        var selected = Selection.activeTransform;
-        GameObject gameObject = new GameObject() {
-            name = "New SelectableGroup"
-        };
-        gameObject.AddComponent<SelectableGroup>();
+    public class SelectableCustomMenuItems {
 
-        if (selected != null)
-            gameObject.transform.SetParent(selected);
+        [MenuItem("GameObject/Selectable/Selectable Group", false, 0)]
+        private static void CreateSelectableGroup() {
+            var selected = Selection.activeTransform;
+            GameObject gameObject = new GameObject() {
+                name = "New SelectableGroup"
+            };
+            gameObject.AddComponent<SelectableGroup>();
 
-        gameObject.transform.localPosition = Vector3.zero;
-        Selection.SetActiveObjectWithContext(gameObject, null);
-    }
+            if (selected != null)
+                gameObject.transform.SetParent(selected);
 
-    [MenuItem("GameObject/Selectable/Cursor", false, 0)]
-    private static void CreateSelectableCursor() {
-        var selected = Selection.activeTransform;
-        GameObject gameObject = new GameObject() {
-            name = "New Cursor"
-        };
-        gameObject.AddComponent<SelectableCursor>();
+            gameObject.transform.localPosition = Vector3.zero;
+            Selection.SetActiveObjectWithContext(gameObject, null);
+        }
 
-        if (selected != null)
-            gameObject.transform.SetParent(selected);
+        [MenuItem("GameObject/Selectable/Cursor", false, 0)]
+        private static void CreateSelectableCursor() {
+            var selected = Selection.activeTransform;
+            GameObject gameObject = new GameObject() {
+                name = "New Cursor"
+            };
+            gameObject.AddComponent<SelectableCursor>();
 
-        gameObject.transform.localPosition = Vector3.zero;
-        Selection.SetActiveObjectWithContext(gameObject, null);
+            if (selected != null)
+                gameObject.transform.SetParent(selected);
+
+            gameObject.transform.localPosition = Vector3.zero;
+            Selection.SetActiveObjectWithContext(gameObject, null);
+        }
+
     }
 
 }
