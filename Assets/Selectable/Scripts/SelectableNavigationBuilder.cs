@@ -8,8 +8,74 @@ namespace SelectablePlus.Navigation {
     }
 
     /// <summary>
+    /// Build navigation data by using the same formula as Unity does for it's own UI navigation.
+    /// Generally the recommended option.
+    /// </summary>
+    public class UnityNavigationBuilder : ISelectableNavigationBuilder {
+        private float maxDistance;
+
+        public UnityNavigationBuilder(float maxDistance) {
+            this.maxDistance = maxDistance;
+        }
+
+        public void buildNavigation(SelectableGroup group) {
+            Vector3 pos;
+            Vector3 dir;
+            Vector3 localDir;
+            float maxScore;
+
+            foreach (SelectableOptionBase option in group.options) {
+                Transform transform = option.GetTransform();
+
+                for (int i = 0; i < option.navigationArray.Length; i++) {
+                    maxScore = Mathf.NegativeInfinity;
+
+                    dir = SelectableNavigationUtils.GetDirectionVector((SelectableNavigationDirection)i);
+                    localDir = Quaternion.Inverse(transform.rotation) * dir;
+                    pos = transform.TransformPoint(SelectableNavigationUtils.GetPointOnRectEdge(transform as RectTransform, localDir));
+
+                    SelectableOptionBase bestPick = null;
+                    foreach (SelectableOptionBase other in group.options) {
+                        SelectableOptionBase sel = other;
+
+                        if (sel == option || sel == null)
+                            continue;
+
+                        var selRect = sel.GetTransform() as RectTransform;
+                        Vector3 selCenter = selRect != null ? (Vector3)selRect.rect.center : Vector3.zero;
+                        Vector3 myVector = sel.GetTransform().TransformPoint(selCenter) - pos;
+
+                        // Value that is the distance out along the direction.
+                        float dot = Vector3.Dot(dir, myVector);
+
+                        // Skip elements that are in the wrong direction or which have zero distance.
+                        // This also ensures that the scoring formula below will not have a division by zero error.
+                        if (dot <= 0 || myVector.magnitude >= maxDistance)
+                            continue;
+
+                        // This scoring function has two priorities:
+                        // - Score higher for positions that are closer.
+                        // - Score higher for positions that are located in the right direction.
+                        // This scoring function combines both of these criteria.
+                        float score = dot / myVector.sqrMagnitude;
+
+                        if (score > maxScore) {
+                            maxScore = score;
+                            bestPick = sel;
+                        }
+                    }
+
+                    option.navigationArray[i] = bestPick;
+                }
+            }
+
+
+        }
+    }
+
+    /// <summary>
     /// Build navigation data using raycasts in all 4 directions from the center of the RectTransform of every option.
-    /// Slow, but as accurate as possible. This is used for baked navigation.
+    /// Slow and messy, but as accurate as possible. Best used for baked navigation.
     /// </summary>
     public class RaycastNavigationBuilder : ISelectableNavigationBuilder {
         float[] maxSearchDistances;
@@ -46,7 +112,7 @@ namespace SelectablePlus.Navigation {
                     SelectableNavigationDirection direction = (SelectableNavigationDirection)j;
                     RectTransform optionRectTransform = cachedTransforms[i];
 
-                    RaycastHit2D hit = Physics2D.Raycast(GetRaycastOrigin(direction, optionRectTransform), GetRaycastVector(direction), maxSearchDistances[j]);
+                    RaycastHit2D hit = Physics2D.Raycast(GetRaycastOrigin(direction, optionRectTransform), SelectableNavigationUtils.GetDirectionVector(direction), maxSearchDistances[j]);
 
                     if (hit.transform != null) {
                         SelectableOptionBase hitOption = hit.transform.GetComponent<SelectableOptionBase>();
@@ -83,43 +149,18 @@ namespace SelectablePlus.Navigation {
 
             return center;
         }
-
-        private static Vector2 GetRaycastVector(SelectableNavigationDirection direction) {
-            switch (direction) {
-                case SelectableNavigationDirection.UP:
-                    return new Vector2(0, 1);
-                case SelectableNavigationDirection.RIGHT:
-                    return new Vector2(1, 0);
-                case SelectableNavigationDirection.DOWN:
-                    return new Vector2(0, -1);
-                case SelectableNavigationDirection.LEFT:
-                    return new Vector2(-1, 0);
-            }
-
-            return Vector2.zero;
-        }
-    }
-
-    /// <summary>
-    /// Build navigation data using a graphics raycaster.
-    /// Less accurate than raycasted navigation, but significantly faster so you can use this at runtime.
-    /// </summary>
-    public class GraphicsRaycastNavigationBuilder : ISelectableNavigationBuilder {
-        public void buildNavigation(SelectableGroup group) {
-            throw new System.NotImplementedException();
-        }
     }
 
     /// <summary>
     /// Build navigation data using x or y coordinate order.
     /// Very fast, so this is safe to use at runtime.
     /// </summary>
-    public class CoordinateNavigationBuilder : ISelectableNavigationBuilder {
+    public class AxisNavigationBuilder : ISelectableNavigationBuilder {
 
         public enum SORTING_AXIS { X, Y };
         public SORTING_AXIS axis;
 
-        public CoordinateNavigationBuilder(SORTING_AXIS axis) {
+        public AxisNavigationBuilder(SORTING_AXIS axis) {
             this.axis = axis;
         }
 
@@ -204,6 +245,29 @@ namespace SelectablePlus.Navigation {
             return list;
         }
 
+        public static Vector2 GetDirectionVector(SelectableNavigationDirection direction) {
+            switch (direction) {
+                case SelectableNavigationDirection.UP:
+                    return new Vector2(0, 1);
+                case SelectableNavigationDirection.RIGHT:
+                    return new Vector2(1, 0);
+                case SelectableNavigationDirection.DOWN:
+                    return new Vector2(0, -1);
+                case SelectableNavigationDirection.LEFT:
+                    return new Vector2(-1, 0);
+            }
+
+            return Vector2.zero;
+        }
+
+        public static Vector3 GetPointOnRectEdge(RectTransform rect, Vector2 direction) {
+            if (rect == null)
+                return Vector3.zero;
+            if (direction != Vector2.zero)
+                direction /= Mathf.Max(Mathf.Abs(direction.x), Mathf.Abs(direction.y));
+            direction = rect.rect.center + Vector2.Scale(rect.rect.size, direction * 0.5f);
+            return direction;
+        }
     }
 
 }

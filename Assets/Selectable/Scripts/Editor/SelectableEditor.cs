@@ -44,13 +44,15 @@ public class SelectableGroupEditor : Editor
 {
 
     private SelectableGroup group;
+    private static bool showNavigation;
 
-    private float[] maxSearchDistances;
+    private float[] maxRaycastDistances;
+    private float maxDistance;
 
     private void OnEnable() {
         group = (SelectableGroup)target;
         group.options = group.GetComponentsInChildren<SelectableOptionBase>().ToList();
-        maxSearchDistances = new float[4];
+        maxRaycastDistances = new float[4];
     }
 
     public override void OnInspectorGUI() {
@@ -71,22 +73,29 @@ public class SelectableGroupEditor : Editor
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Up distance");
-            maxSearchDistances[0] = EditorGUILayout.FloatField(maxSearchDistances[0]);
+            maxRaycastDistances[0] = EditorGUILayout.FloatField(maxRaycastDistances[0]);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Right distance");
-            maxSearchDistances[1] = EditorGUILayout.FloatField(maxSearchDistances[1]);
+            maxRaycastDistances[1] = EditorGUILayout.FloatField(maxRaycastDistances[1]);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Down distance");
-            maxSearchDistances[2] = EditorGUILayout.FloatField(maxSearchDistances[2]);
+            maxRaycastDistances[2] = EditorGUILayout.FloatField(maxRaycastDistances[2]);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Left distance");
-            maxSearchDistances[3] = EditorGUILayout.FloatField(maxSearchDistances[3]);
+            maxRaycastDistances[3] = EditorGUILayout.FloatField(maxRaycastDistances[3]);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        if (group.navigationType == SelectableGroup.NavigationBuildType.UNITY) {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Max Distance");
+            maxDistance = EditorGUILayout.FloatField(maxDistance);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -99,22 +108,76 @@ public class SelectableGroupEditor : Editor
 
             switch (group.navigationType) {
                 case SelectableGroup.NavigationBuildType.HORIZONTAL:
-                    selectableNavigationBuilder = new CoordinateNavigationBuilder(CoordinateNavigationBuilder.SORTING_AXIS.X);
+                    selectableNavigationBuilder = new AxisNavigationBuilder(AxisNavigationBuilder.SORTING_AXIS.X);
                     break;
                 case SelectableGroup.NavigationBuildType.VERTICAL:
-                    selectableNavigationBuilder = new CoordinateNavigationBuilder(CoordinateNavigationBuilder.SORTING_AXIS.Y);
+                    selectableNavigationBuilder = new AxisNavigationBuilder(AxisNavigationBuilder.SORTING_AXIS.Y);
                     break;
                 case SelectableGroup.NavigationBuildType.RAYCAST:
-                    selectableNavigationBuilder = new RaycastNavigationBuilder(maxSearchDistances);
+                    selectableNavigationBuilder = new RaycastNavigationBuilder(maxRaycastDistances);
+                    break;
+                case SelectableGroup.NavigationBuildType.UNITY:
+                    selectableNavigationBuilder = new UnityNavigationBuilder(maxDistance);
                     break;
                 default:
                     selectableNavigationBuilder = new SortedListNavigationBuilder();
                     break;
             }
 
+            UnityEngine.Profiling.Profiler.BeginSample("Nav Build");
             selectableNavigationBuilder.buildNavigation(group);
+            UnityEngine.Profiling.Profiler.EndSample();
+
+        }
+
+        showNavigation = GUILayout.Toggle(showNavigation, "Show Navigation");
+    }
+
+    private void OnSceneGUI() {
+        if (!showNavigation)
+            return;
+
+        foreach (SelectableOptionBase option in group.options) {
+            DrawNavigationForSelectable(option);
         }
     }
 
+    private static void DrawNavigationForSelectable(SelectableOptionBase option) {
+        if (option == null)
+            return;
+
+        Transform transform = option.transform;
+        bool active = Selection.transforms.Any(e => e == transform);
+        Handles.color = new Color(1.0f, 0.9f, 0.1f, active ? 1.0f : 0.4f);
+        DrawNavigationArrow(-Vector2.right, option, option.GetNextOption(SelectableNavigationDirection.LEFT));
+        DrawNavigationArrow(Vector2.right, option, option.GetNextOption(SelectableNavigationDirection.RIGHT));
+        DrawNavigationArrow(Vector2.up, option, option.GetNextOption(SelectableNavigationDirection.UP));
+        DrawNavigationArrow(-Vector2.up, option, option.GetNextOption(SelectableNavigationDirection.DOWN));
+    }
+
+    const float kArrowThickness = 2.5f;
+    const float kArrowHeadSize = 1.2f;
+
+    private static void DrawNavigationArrow(Vector2 direction, SelectableOptionBase fromObj, SelectableOptionBase toObj) {
+        if (fromObj == null || toObj == null)
+            return;
+        Transform fromTransform = fromObj.transform;
+        Transform toTransform = toObj.transform;
+
+        Vector2 sideDir = new Vector2(direction.y, -direction.x);
+        Vector3 fromPoint = fromTransform.TransformPoint(SelectableNavigationUtils.GetPointOnRectEdge(fromTransform as RectTransform, direction));
+        Vector3 toPoint = toTransform.TransformPoint(SelectableNavigationUtils.GetPointOnRectEdge(toTransform as RectTransform, -direction));
+        float fromSize = HandleUtility.GetHandleSize(fromPoint) * 0.05f;
+        float toSize = HandleUtility.GetHandleSize(toPoint) * 0.05f;
+        fromPoint += fromTransform.TransformDirection(sideDir) * fromSize;
+        toPoint += toTransform.TransformDirection(sideDir) * toSize;
+        float length = Vector3.Distance(fromPoint, toPoint);
+        Vector3 fromTangent = fromTransform.rotation * direction * length * 0.3f;
+        Vector3 toTangent = toTransform.rotation * -direction * length * 0.3f;
+
+        Handles.DrawBezier(fromPoint, toPoint, fromPoint + fromTangent, toPoint + toTangent, Handles.color, null, kArrowThickness);
+        Handles.DrawAAPolyLine(kArrowThickness, toPoint, toPoint + toTransform.rotation * (-direction - sideDir) * toSize * kArrowHeadSize);
+        Handles.DrawAAPolyLine(kArrowThickness, toPoint, toPoint + toTransform.rotation * (-direction + sideDir) * toSize * kArrowHeadSize);
+    }
 
 }

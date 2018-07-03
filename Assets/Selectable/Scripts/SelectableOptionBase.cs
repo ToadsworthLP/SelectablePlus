@@ -9,6 +9,8 @@ namespace SelectablePlus {
         public SelectableOptionBase[] navigationArray = new SelectableOptionBase[4];
         public Vector3 optionPositionOffset;
 
+        private SelectableGroup group;
+
         /// <summary>
         /// Called when the cursor selects this option.
         /// </summary>
@@ -67,6 +69,10 @@ namespace SelectablePlus {
             return navigationArray[(int)direction];
         }
 
+        public SelectableGroup GetGroup() {
+            if (group == null) group = gameObject.GetComponentInParent<SelectableGroup>();
+            return group;
+        }
 
         /// <summary>
         /// Overrides the navigation data for a given direction with a custom object deriving from the SelectableOptionBase class.
@@ -82,11 +88,16 @@ namespace SelectablePlus {
             navigationArray = new SelectableOptionBase[4];
         }
 
+        public Transform GetTransform() {
+            if (optionTransform == null) optionTransform = GetComponent<RectTransform>();
+            return transform;
+        }
+
         public Vector3 GetOptionPosition() {
             if (gameObject.isStatic)
                 return staticOptionPosition;
 
-            return optionTransform.position + optionPositionOffset;
+            return GetTransform().position + optionPositionOffset;
         }
 
     }
