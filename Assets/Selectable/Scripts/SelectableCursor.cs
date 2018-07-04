@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SelectablePlus {
 
-    public class SelectableCursor : MonoBehaviour {
+    public class SelectableCursor : SelectableCursorBase {
 
         //Controls
         public string upKeyName = "w";
@@ -42,9 +42,9 @@ namespace SelectablePlus {
         /// <param name="group">The SelectableGroup to enter</param>
         /// <param name="selectOption">The option to select after entering the group (instead of the group's first option)</param>
         /// <param name="incognitoMode">If set to true, the group change won't be recorded in the group history and option history stacks</param>
-        public void EnterGroup(SelectableGroup group, SelectableOptionBase selectOption = null, bool incognitoMode = false) {
+        public override void EnterGroup(SelectableGroup group, SelectableOptionBase selectOption = null, object context = null) {
             if (group != null) {
-                if (!incognitoMode) {
+                if (context == null || (context is bool && (bool)context == false)) {
                     groupHistory.Push(currentGroup);
                     optionHistory.Push(currentlySelectedOption);
                 }
@@ -65,7 +65,7 @@ namespace SelectablePlus {
         /// Selects the given option.
         /// </summary>
         /// <param name="option">The object deriving from SelectableOptionBase to select.</param>
-        public void SelectOption(SelectableOptionBase option) {
+        public override void SelectOption(SelectableOptionBase option, object context = null) {
             if (option != null && currentGroup.options.Contains(option)) {
                 currentlySelectedOption.Deselect(this);
                 currentlySelectedOption = option;
@@ -113,8 +113,10 @@ namespace SelectablePlus {
             if (Input.GetKeyDown(okKeyName))
                 currentlySelectedOption.OkPressed(this);
 
-            if (Input.GetKeyDown(cancelKeyName))
+            if (Input.GetKeyDown(cancelKeyName)) {
                 currentlySelectedOption.CancelPressed(this);
+            }
+
         }
 
         private void UpdatePosition(Vector3 targetPosition) {
@@ -127,6 +129,10 @@ namespace SelectablePlus {
             if (Input.GetKeyDown(downKeyName)) { return SelectableNavigationDirection.DOWN; }
             if (Input.GetKeyDown(leftKeyName)) { return SelectableNavigationDirection.LEFT; }
             return SelectableNavigationDirection.NONE;
+        }
+
+        public override void AfterCancelPressed(object context = null) {
+            ReturnToPreviousGroup();
         }
 
     }

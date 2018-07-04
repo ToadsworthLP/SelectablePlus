@@ -1,6 +1,4 @@
-﻿using SelectablePlus;
-using TMPro;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace SelectablePlus {

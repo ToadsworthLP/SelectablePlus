@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SelectablePlus {
 
@@ -9,32 +8,32 @@ namespace SelectablePlus {
         public SelectableOptionBase[] navigationArray = new SelectableOptionBase[4];
         public Vector3 optionPositionOffset;
 
-        private SelectableGroup group;
-
         /// <summary>
         /// Called when the cursor selects this option.
         /// </summary>
         /// <param name="cursor">The cursor triggering the event</param>
-        public virtual void Select(SelectableCursor cursor) { }
+        public virtual void Select(SelectableCursorBase cursor) { }
 
         /// <summary>
         /// Called when the cursor leaves this option.
         /// </summary>
         /// <param name="cursor">The cursor triggering the event</param>
-        public virtual void Deselect(SelectableCursor cursor) { }
+        public virtual void Deselect(SelectableCursorBase cursor) { }
 
         /// <summary>
         /// Called when the OK key specified in the cursor's properties is pressed while this option is selected.
         /// </summary>
         /// <param name="cursor">The cursor triggering the event</param>
-        public virtual void OkPressed(SelectableCursor cursor) { }
+        public virtual void OkPressed(SelectableCursorBase cursor) {
+            cursor.AfterOkPressed();
+        }
 
         /// <summary>
         /// Called when the Cancel key specified in the cursor's properties is pressed while this option is selected.
         /// </summary>
         /// <param name="cursor">The cursor triggering the event</param>
-        public virtual void CancelPressed(SelectableCursor cursor) {
-            cursor.ReturnToPreviousGroup();
+        public virtual void CancelPressed(SelectableCursorBase cursor) {
+            cursor.AfterCancelPressed();
         }
 
         private Transform optionTransform;
@@ -69,11 +68,6 @@ namespace SelectablePlus {
             return navigationArray[(int)direction];
         }
 
-        public SelectableGroup GetGroup() {
-            if (group == null) group = gameObject.GetComponentInParent<SelectableGroup>();
-            return group;
-        }
-
         /// <summary>
         /// Overrides the navigation data for a given direction with a custom object deriving from the SelectableOptionBase class.
         /// </summary>
@@ -84,7 +78,7 @@ namespace SelectablePlus {
                 navigationArray[(int)direction] = option;
         }
 
-        public void ResetOptions() {
+        public void ResetNavigation() {
             navigationArray = new SelectableOptionBase[4];
         }
 

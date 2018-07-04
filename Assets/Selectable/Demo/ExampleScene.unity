@@ -295,7 +295,7 @@ MonoBehaviour:
   - {fileID: 1446054069}
   - {fileID: 819159913}
   - {fileID: 851556327}
-  navigationType: 2
+  navigationType: 3
 --- !u!1 &819159911
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,7 +492,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   navigationArray:
-  - {fileID: 819159913}
+  - {fileID: 1446054069}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -672,7 +672,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 2020774106}
   - {fileID: 2010907000}
-  - {fileID: 0}
+  - {fileID: 1212730571}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
     m_PersistentCalls:
@@ -880,7 +880,7 @@ MonoBehaviour:
   - {fileID: 2131422555}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 1346032305}
+  - {fileID: 1169249788}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
     m_PersistentCalls:
@@ -943,7 +943,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 385, y: -162}
+  m_AnchoredPosition: {x: 547, y: -162}
   m_SizeDelta: {x: 150, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1028501469
@@ -1017,7 +1017,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -1372,7 +1372,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigationArray:
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 956549193}
   - {fileID: 2131422555}
   - {fileID: 1346032305}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
@@ -1473,7 +1473,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -194, y: -162}
+  m_AnchoredPosition: {x: -315, y: -162}
   m_SizeDelta: {x: 150, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1212730569
@@ -1530,7 +1530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigationArray:
   - {fileID: 2010907000}
-  - {fileID: 2020774106}
+  - {fileID: 933430620}
   - {fileID: 0}
   - {fileID: 0}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
@@ -1749,7 +1749,7 @@ MonoBehaviour:
   navigationArray:
   - {fileID: 1915545728}
   - {fileID: 0}
-  - {fileID: 819159913}
+  - {fileID: 851556327}
   - {fileID: 0}
   optionPositionOffset: {x: -337.7, y: 12.5, z: 0}
   OnOkPressed:
@@ -2009,7 +2009,7 @@ MonoBehaviour:
   - {fileID: 933430620}
   - {fileID: 2020774106}
   - {fileID: 1212730571}
-  - {fileID: 0}
+  - {fileID: 1212730571}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
     m_PersistentCalls:
@@ -2072,7 +2072,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -194, y: -78}
+  m_AnchoredPosition: {x: -250, y: -78}
   m_SizeDelta: {x: 150, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2020774105
@@ -2381,7 +2381,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigationArray:
   - {fileID: 1169249788}
-  - {fileID: 0}
+  - {fileID: 956549193}
   - {fileID: 956549193}
   - {fileID: 1346032305}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
@@ -2446,6 +2446,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 385, y: -78}
+  m_AnchoredPosition: {x: 464, y: -78}
   m_SizeDelta: {x: 150, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}

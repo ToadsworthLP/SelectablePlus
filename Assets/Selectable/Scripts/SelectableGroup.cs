@@ -11,7 +11,7 @@ namespace SelectablePlus {
         [HideInInspector]
         public List<SelectableOptionBase> options;
 
-        public enum NavigationBuildType { HORIZONTAL, VERTICAL, RAYCAST, UNITY }
+        public enum NavigationBuildType { HORIZONTAL, VERTICAL, RAYCAST, UNITY, EXPLICIT }
         public NavigationBuildType navigationType = NavigationBuildType.UNITY;
 
         /// <summary>

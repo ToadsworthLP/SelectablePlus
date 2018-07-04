@@ -4,7 +4,83 @@ using UnityEngine;
 namespace SelectablePlus.Navigation {
 
     public interface ISelectableNavigationBuilder {
-        void buildNavigation(SelectableGroup group);
+        void BuildNavigation(SelectableGroup group);
+    }
+
+    /// <summary>
+    /// Build navigation data by using the same formula as Unity does for it's own UI navigation.
+    /// Generally the recommended option. This advanced version has a few extra parameters.
+    /// </summary>
+    public class AdvancedUnityNavigationBuilder : ISelectableNavigationBuilder {
+        private float maxDistance;
+        private float distanceWeight;
+        private float angleWeight;
+
+        public AdvancedUnityNavigationBuilder(float maxDistance, float distanceWeight = 1f, float angleWeight = 1f) {
+            this.maxDistance = maxDistance;
+            this.distanceWeight = distanceWeight;
+            this.angleWeight = angleWeight;
+        }
+
+        public void BuildNavigation(SelectableGroup group) {
+            if (distanceWeight == 0 || angleWeight == 0) {
+                Debug.LogError("DistanceWeight or AngleWeight has been set to an invalid value! Only values greater than zero are allowed!");
+                return;
+            }
+
+            Vector3 position;
+            Vector3 direction;
+            Vector3 localDir;
+            float maxScore;
+
+            foreach (SelectableOptionBase option in group.options) {
+                Transform transform = option.GetTransform();
+
+                for (int i = 0; i < option.navigationArray.Length; i++) {
+                    maxScore = Mathf.NegativeInfinity;
+
+                    direction = SelectableNavigationUtils.GetDirectionVector((SelectableNavigationDirection)i);
+                    localDir = Quaternion.Inverse(transform.rotation) * direction;
+                    position = transform.TransformPoint(SelectableNavigationUtils.GetPointOnRectEdge(transform as RectTransform, localDir));
+
+                    SelectableOptionBase bestPick = null;
+                    foreach (SelectableOptionBase other in group.options) {
+                        SelectableOptionBase sel = other;
+
+                        if (sel == option || sel == null)
+                            continue;
+
+                        var selRect = sel.GetTransform() as RectTransform;
+                        Vector3 selCenter = selRect != null ? (Vector3)selRect.rect.center : Vector3.zero;
+                        Vector3 myVector = sel.GetTransform().TransformPoint(selCenter) - position;
+
+                        // Value that is the distance out along the direction.
+                        float dot = Vector3.Dot(direction, myVector);
+
+                        // Skip elements that are in the wrong direction or which have zero or too much distance.
+                        // This also ensures that the scoring formula below will not have a division by zero error.
+                        if (dot <= 0 || (maxDistance > 0 && myVector.magnitude > maxDistance))
+                            continue;
+
+                        // This scoring function has two priorities, which are multiplied by the respective weight values:
+                        // - Score higher for positions that are closer.
+                        // - Score higher for positions that are located in the right direction.
+                        // This scoring function combines both of these criteria.
+                        float score = dot * angleWeight / myVector.sqrMagnitude * distanceWeight;
+                        Debug.Log(score);
+
+                        if (score > maxScore) {
+                            maxScore = score;
+                            bestPick = sel;
+                        }
+                    }
+
+                    option.navigationArray[i] = bestPick;
+                }
+            }
+
+
+        }
     }
 
     /// <summary>
@@ -18,9 +94,9 @@ namespace SelectablePlus.Navigation {
             this.maxDistance = maxDistance;
         }
 
-        public void buildNavigation(SelectableGroup group) {
-            Vector3 pos;
-            Vector3 dir;
+        public void BuildNavigation(SelectableGroup group) {
+            Vector3 position;
+            Vector3 direction;
             Vector3 localDir;
             float maxScore;
 
@@ -30,9 +106,9 @@ namespace SelectablePlus.Navigation {
                 for (int i = 0; i < option.navigationArray.Length; i++) {
                     maxScore = Mathf.NegativeInfinity;
 
-                    dir = SelectableNavigationUtils.GetDirectionVector((SelectableNavigationDirection)i);
-                    localDir = Quaternion.Inverse(transform.rotation) * dir;
-                    pos = transform.TransformPoint(SelectableNavigationUtils.GetPointOnRectEdge(transform as RectTransform, localDir));
+                    direction = SelectableNavigationUtils.GetDirectionVector((SelectableNavigationDirection)i);
+                    localDir = Quaternion.Inverse(transform.rotation) * direction;
+                    position = transform.TransformPoint(SelectableNavigationUtils.GetPointOnRectEdge(transform as RectTransform, localDir));
 
                     SelectableOptionBase bestPick = null;
                     foreach (SelectableOptionBase other in group.options) {
@@ -43,14 +119,14 @@ namespace SelectablePlus.Navigation {
 
                         var selRect = sel.GetTransform() as RectTransform;
                         Vector3 selCenter = selRect != null ? (Vector3)selRect.rect.center : Vector3.zero;
-                        Vector3 myVector = sel.GetTransform().TransformPoint(selCenter) - pos;
+                        Vector3 myVector = sel.GetTransform().TransformPoint(selCenter) - position;
 
                         // Value that is the distance out along the direction.
-                        float dot = Vector3.Dot(dir, myVector);
+                        float dot = Vector3.Dot(direction, myVector);
 
-                        // Skip elements that are in the wrong direction or which have zero distance.
+                        // Skip elements that are in the wrong direction or which have zero or too much distance.
                         // This also ensures that the scoring formula below will not have a division by zero error.
-                        if (dot <= 0 || myVector.magnitude >= maxDistance)
+                        if (dot <= 0 || (maxDistance > 0 && myVector.magnitude > maxDistance))
                             continue;
 
                         // This scoring function has two priorities:
@@ -84,7 +160,7 @@ namespace SelectablePlus.Navigation {
             this.maxSearchDistances = maxSearchDistances;
         }
 
-        public void buildNavigation(SelectableGroup group) {
+        public void BuildNavigation(SelectableGroup group) {
             BuildSmartNavigation(SelectableNavigationUtils.SortByYPosFirst(group.options), maxSearchDistances);
         }
 
@@ -164,7 +240,7 @@ namespace SelectablePlus.Navigation {
             this.axis = axis;
         }
 
-        public void buildNavigation(SelectableGroup group) {
+        public void BuildNavigation(SelectableGroup group) {
             List<SelectableOptionBase> sortedOptions;
             if (axis == SORTING_AXIS.X) {
                 sortedOptions = SelectableNavigationUtils.SortByXPosFirst(group.options);
@@ -184,7 +260,7 @@ namespace SelectablePlus.Navigation {
     /// in the direction set in the group settings.
     /// </summary>
     public class SortedListNavigationBuilder : ISelectableNavigationBuilder {
-        public void buildNavigation(SelectableGroup group) {
+        public void BuildNavigation(SelectableGroup group) {
             SelectableNavigationUtils.BuildNavigationFromSortedList(group.options, group.navigationType);
         }
     }

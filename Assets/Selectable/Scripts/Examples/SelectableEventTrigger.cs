@@ -7,7 +7,7 @@ namespace SelectablePlus.Examples {
 
         public UnityEvent OnOkPressed;
 
-        public override void OkPressed(SelectableCursor cursor) {
+        public override void OkPressed(SelectableCursorBase cursor) {
             OnOkPressed.Invoke();
         }
     }

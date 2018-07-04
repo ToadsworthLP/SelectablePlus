@@ -1,5 +1,4 @@
-﻿using SelectablePlus;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SelectablePlus.Examples {
 
@@ -9,7 +8,7 @@ namespace SelectablePlus.Examples {
         [Tooltip("Specifies if the group change should be recorded in the cursor's group history")]
         public bool incognitoMode;
 
-        public override void OkPressed(SelectableCursor cursor) {
+        public override void OkPressed(SelectableCursorBase cursor) {
             cursor.EnterGroup(targetGroup, null, incognitoMode);
         }
 
