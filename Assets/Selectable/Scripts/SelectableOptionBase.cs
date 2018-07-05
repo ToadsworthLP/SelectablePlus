@@ -36,6 +36,19 @@ namespace SelectablePlus {
             cursor.AfterCancelPressed();
         }
 
+        /// <summary>
+        /// Called when the cursor enters the group this Selectable is in.
+        /// </summary>
+        /// <param name="cursor">The cursor triggering the event</param>
+        public virtual void GroupEntered(SelectableCursorBase cursor) { }
+
+        /// <summary>
+        /// Called when the cursor leaves the group this Selectable is in.
+        /// </summary>
+        /// <param name="cursor">The cursor triggering the event</param>
+        public virtual void GroupLeft(SelectableCursorBase cursor) { }
+
+
         private Transform optionTransform;
         private Vector3 staticOptionPosition;
 

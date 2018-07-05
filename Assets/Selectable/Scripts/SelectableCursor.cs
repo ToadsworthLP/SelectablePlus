@@ -41,7 +41,7 @@ namespace SelectablePlus {
         /// </summary>
         /// <param name="group">The SelectableGroup to enter</param>
         /// <param name="selectOption">The option to select after entering the group (instead of the group's first option)</param>
-        /// <param name="incognitoMode">If set to true, the group change won't be recorded in the group history and option history stacks</param>
+        /// <param name="context">If set to true, the group change won't be recorded in the group history and option history stacks</param>
         public override void EnterGroup(SelectableGroup group, SelectableOptionBase selectOption = null, object context = null) {
             if (group != null) {
                 if (context == null || (context is bool && (bool)context == false)) {
