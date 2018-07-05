@@ -55,9 +55,8 @@ public class SelectableGroupEditor : Editor {
 
     private float[] maxRaycastDistances;
 
-    private float maxDistance;
-    private float distanceWeight = 1f;
-    private float angleWeight = 1f;
+    private float maxDistance = -1;
+    private float minScore = -1;
 
     private void OnEnable() {
         group = (SelectableGroup)target;
@@ -103,7 +102,7 @@ public class SelectableGroupEditor : Editor {
         }
 
         if (group.navigationType == SelectableGroup.NavigationBuildType.UNITY) {
-            EditorGUILayout.HelpBox("Set the maximum allowed distance between options. If this is set to 0, the distance checks will be skipped.", MessageType.Info);
+            EditorGUILayout.HelpBox("Set the maximum allowed distance between options and the minimum score for an option to be considered valid. If negative values are set, the check will be skipped.", MessageType.Info);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Max Distance");
@@ -111,13 +110,8 @@ public class SelectableGroupEditor : Editor {
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Distance Weight");
-            distanceWeight = EditorGUILayout.FloatField(distanceWeight);
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Angle Weight");
-            angleWeight = EditorGUILayout.FloatField(angleWeight);
+            EditorGUILayout.PrefixLabel("Minimum Score");
+            minScore = EditorGUILayout.FloatField(minScore);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -145,13 +139,10 @@ public class SelectableGroupEditor : Editor {
                         selectableNavigationBuilder = new RaycastNavigationBuilder(maxRaycastDistances);
                         break;
                     case SelectableGroup.NavigationBuildType.UNITY:
-                        if (distanceWeight == 1f && angleWeight == 1f) {
-                            selectableNavigationBuilder = new UnityNavigationBuilder(maxDistance);
-                        } else if (distanceWeight > 0 && angleWeight > 0) {
-                            selectableNavigationBuilder = new AdvancedUnityNavigationBuilder(maxDistance, distanceWeight, angleWeight);
+                        if (minScore <= 0 && maxDistance <= 0) {
+                            selectableNavigationBuilder = new UnityNavigationBuilder();
                         } else {
-                            EditorUtility.DisplayDialog("SelectablePlus", "Distance Weight or Angle Weight has been set to an invalid value! Only values greater than zero are allowed!", "OK");
-                            return;
+                            selectableNavigationBuilder = new AdvancedUnityNavigationBuilder(maxDistance, minScore);
                         }
                         break;
                     default:

@@ -268,5 +268,3 @@ D:\Unity Projects\SelectablePlus\obj\Debug\Assembly-CSharp.csproj.CoreCompileInp
 D:\Unity Projects\SelectablePlus\obj\Debug\Assembly-CSharp.csproj.CopyComplete
 D:\Unity Projects\SelectablePlus\obj\Debug\Assembly-CSharp.dll
 D:\Unity Projects\SelectablePlus\obj\Debug\Assembly-CSharp.pdb
-D:\Unity Projects\SelectablePlus\Temp\bin\Debug\UnityEditor.UI.dll
-D:\Unity Projects\SelectablePlus\Temp\bin\Debug\UnityEditor.UI.xml

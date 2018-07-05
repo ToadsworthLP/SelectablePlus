@@ -295,7 +295,7 @@ MonoBehaviour:
   - {fileID: 1446054069}
   - {fileID: 819159913}
   - {fileID: 851556327}
-  navigationType: 3
+  navigationType: 1
 --- !u!1 &819159911
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,7 +492,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   navigationArray:
-  - {fileID: 1446054069}
+  - {fileID: 819159913}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -672,7 +672,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 2020774106}
   - {fileID: 2010907000}
-  - {fileID: 1212730571}
+  - {fileID: 0}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
     m_PersistentCalls:
@@ -880,7 +880,7 @@ MonoBehaviour:
   - {fileID: 2131422555}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 1169249788}
+  - {fileID: 0}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
     m_PersistentCalls:
@@ -963,7 +963,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1028501470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1372,7 +1372,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigationArray:
   - {fileID: 0}
-  - {fileID: 956549193}
+  - {fileID: 0}
   - {fileID: 2131422555}
   - {fileID: 1346032305}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
@@ -1530,7 +1530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigationArray:
   - {fileID: 2010907000}
-  - {fileID: 933430620}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
@@ -1632,7 +1632,7 @@ MonoBehaviour:
   navigationArray:
   - {fileID: 0}
   - {fileID: 1169249788}
-  - {fileID: 956549193}
+  - {fileID: 0}
   - {fileID: 2020774106}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
@@ -1749,7 +1749,7 @@ MonoBehaviour:
   navigationArray:
   - {fileID: 1915545728}
   - {fileID: 0}
-  - {fileID: 851556327}
+  - {fileID: 819159913}
   - {fileID: 0}
   optionPositionOffset: {x: -337.7, y: 12.5, z: 0}
   OnOkPressed:
@@ -1818,7 +1818,7 @@ GameObject:
   - component: {fileID: 1484413707}
   - component: {fileID: 1484413708}
   m_Layer: 5
-  m_Name: UnityNavGroup
+  m_Name: UnityNavGroup (0.005 Min. Score)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2007,9 +2007,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigationArray:
   - {fileID: 933430620}
-  - {fileID: 2020774106}
+  - {fileID: 0}
   - {fileID: 1212730571}
-  - {fileID: 1212730571}
+  - {fileID: 0}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
     m_PersistentCalls:
@@ -2107,7 +2107,7 @@ MonoBehaviour:
   navigationArray:
   - {fileID: 0}
   - {fileID: 1346032305}
-  - {fileID: 1212730571}
+  - {fileID: 0}
   - {fileID: 933430620}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
@@ -2272,7 +2272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2087146775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2381,9 +2381,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigationArray:
   - {fileID: 1169249788}
+  - {fileID: 0}
   - {fileID: 956549193}
-  - {fileID: 956549193}
-  - {fileID: 1346032305}
+  - {fileID: 0}
   optionPositionOffset: {x: -116.37, y: -1.7, z: 0}
   OnOkPressed:
     m_PersistentCalls:

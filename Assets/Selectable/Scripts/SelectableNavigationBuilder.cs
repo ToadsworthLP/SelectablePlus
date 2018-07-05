@@ -8,26 +8,20 @@ namespace SelectablePlus.Navigation {
     }
 
     /// <summary>
-    /// Build navigation data by using the same formula as Unity does for it's own UI navigation.
-    /// Generally the recommended option. This advanced version has a few extra parameters.
+    /// Build navigation data using the same method as Unity does for it's own UI navigation.
+    /// Generally the recommended option. This advanced version lets you specify a minimum score and a maximum distance for each option to pass.
+    /// Parameters set to a negative value will be skipped!
     /// </summary>
     public class AdvancedUnityNavigationBuilder : ISelectableNavigationBuilder {
         private float maxDistance;
-        private float distanceWeight;
-        private float angleWeight;
+        private float minScore;
 
-        public AdvancedUnityNavigationBuilder(float maxDistance, float distanceWeight = 1f, float angleWeight = 1f) {
+        public AdvancedUnityNavigationBuilder(float maxDistance = -1, float minScore = -1) {
             this.maxDistance = maxDistance;
-            this.distanceWeight = distanceWeight;
-            this.angleWeight = angleWeight;
+            this.minScore = minScore;
         }
 
         public void BuildNavigation(SelectableGroup group) {
-            if (distanceWeight == 0 || angleWeight == 0) {
-                Debug.LogError("DistanceWeight or AngleWeight has been set to an invalid value! Only values greater than zero are allowed!");
-                return;
-            }
-
             Vector3 position;
             Vector3 direction;
             Vector3 localDir;
@@ -54,7 +48,6 @@ namespace SelectablePlus.Navigation {
                         Vector3 selCenter = selRect != null ? (Vector3)selRect.rect.center : Vector3.zero;
                         Vector3 myVector = sel.GetTransform().TransformPoint(selCenter) - position;
 
-                        // Value that is the distance out along the direction.
                         float dot = Vector3.Dot(direction, myVector);
 
                         // Skip elements that are in the wrong direction or which have zero or too much distance.
@@ -62,17 +55,21 @@ namespace SelectablePlus.Navigation {
                         if (dot <= 0 || (maxDistance > 0 && myVector.magnitude > maxDistance))
                             continue;
 
-                        // This scoring function has two priorities, which are multiplied by the respective weight values:
+                        // This scoring function has two priorities:
                         // - Score higher for positions that are closer.
                         // - Score higher for positions that are located in the right direction.
                         // This scoring function combines both of these criteria.
-                        float score = dot * angleWeight / myVector.sqrMagnitude * distanceWeight;
-                        Debug.Log(score);
+                        float score = dot / myVector.sqrMagnitude;
+
+                        // Skip elements whose score is lower than the minimum score.
+                        if (minScore > 0 && score < minScore)
+                            continue;
 
                         if (score > maxScore) {
                             maxScore = score;
                             bestPick = sel;
                         }
+
                     }
 
                     option.navigationArray[i] = bestPick;
@@ -84,16 +81,10 @@ namespace SelectablePlus.Navigation {
     }
 
     /// <summary>
-    /// Build navigation data by using the same formula as Unity does for it's own UI navigation.
+    /// Build navigation data using the same method as Unity does for it's own UI navigation.
     /// Generally the recommended option.
     /// </summary>
     public class UnityNavigationBuilder : ISelectableNavigationBuilder {
-        private float maxDistance;
-
-        public UnityNavigationBuilder(float maxDistance) {
-            this.maxDistance = maxDistance;
-        }
-
         public void BuildNavigation(SelectableGroup group) {
             Vector3 position;
             Vector3 direction;
@@ -126,7 +117,7 @@ namespace SelectablePlus.Navigation {
 
                         // Skip elements that are in the wrong direction or which have zero or too much distance.
                         // This also ensures that the scoring formula below will not have a division by zero error.
-                        if (dot <= 0 || (maxDistance > 0 && myVector.magnitude > maxDistance))
+                        if (dot <= 0)
                             continue;
 
                         // This scoring function has two priorities:
