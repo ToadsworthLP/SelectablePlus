@@ -1,5 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using SelectablePlus;
+using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace SelectablePlus {
 
@@ -35,6 +41,14 @@ namespace SelectablePlus {
         //Holds the currently presed button
         private SelectableNavigationDirection currentDirection;
 
+        //Stores the GraphicsRaycaster component of the canvas this option is on
+        [HideInInspector]
+        public GraphicRaycaster raycaster;
+
+        //Cached PointerEventData
+        private PointerEventData pointerEventData;
+
+        public bool mouseControls = true;
 
         /// <summary>
         /// Enters the given SelectableGroup.
@@ -49,7 +63,15 @@ namespace SelectablePlus {
                     optionHistory.Push(currentlySelectedOption);
                 }
 
+                foreach (SelectableOptionBase option in currentGroup.options) {
+                    option.GroupLeft(this);
+                }
+
                 currentGroup = group;
+
+                foreach (SelectableOptionBase option in group.options) {
+                    option.GroupEntered(this);
+                }
 
                 if (selectOption == null) {
                     SelectOption(group.GetFirstOption());
@@ -100,6 +122,8 @@ namespace SelectablePlus {
 
             currentGroup = firstGroup;
             currentlySelectedOption = firstGroup.GetFirstOption();
+
+            if (mouseControls) pointerEventData = new PointerEventData(null);
         }
 
         private void Update() {
@@ -113,10 +137,42 @@ namespace SelectablePlus {
             if (Input.GetKeyDown(okKeyName))
                 currentlySelectedOption.OkPressed(this);
 
-            if (Input.GetKeyDown(cancelKeyName)) {
+            if (Input.GetKeyDown(cancelKeyName))
+                currentlySelectedOption.CancelPressed(this);
+
+            if (mouseControls)
+                HandleMouseControls();
+        }
+
+        private void HandleMouseControls() {
+            UnityEngine.Profiling.Profiler.BeginSample("Mouse Controls");
+
+            if (raycaster == null) {
+                Debug.LogError("No graphic raycaster was assigned! Please set one in the inspector as it is required for mouse controls to work!");
+                mouseControls = false;
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(1)) {
                 currentlySelectedOption.CancelPressed(this);
             }
 
+            pointerEventData.position = Input.mousePosition;
+            List<RaycastResult> results = new List<RaycastResult>();
+
+            raycaster.Raycast(pointerEventData, results);
+
+            if (results.Count < 1) return;
+
+            SelectableOptionBase hitOption = results[0].gameObject.GetComponent<SelectableOptionBase>();
+            if (hitOption != null && currentGroup.options.Contains(hitOption)) {
+                SelectOption(hitOption);
+                if (Input.GetMouseButtonDown(0)) {
+                    currentlySelectedOption.OkPressed(this);
+                }
+            }
+
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private void UpdatePosition(Vector3 targetPosition) {
@@ -139,5 +195,33 @@ namespace SelectablePlus {
 
     public enum SelectableNavigationDirection { UP, RIGHT, DOWN, LEFT, NONE };
 
+}
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(SelectableCursor), true)]
+[CanEditMultipleObjects]
+public class SelectableCursorEditor : Editor {
+
+    private SelectableCursor cursor;
+    private SerializedProperty raycasterProperty;
+
+    private void OnEnable() {
+        cursor = (SelectableCursor)target;
+        raycasterProperty = serializedObject.FindProperty("raycaster");
+    }
+
+    public override void OnInspectorGUI() {
+        DrawDefaultInspector();
+
+        if (cursor.mouseControls) {
+            if (cursor.raycaster == null) {
+                EditorGUILayout.HelpBox("Please set a graphic raycaster! Without it, mouse controls don't work.", MessageType.Error);
+            }
+
+            EditorGUILayout.PropertyField(raycasterProperty, new GUIContent("Graphic Raycaster"));
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
 
 }
+#endif
