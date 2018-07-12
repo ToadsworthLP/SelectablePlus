@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SelectablePlus.Navigation;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SelectablePlus {
@@ -25,6 +26,23 @@ namespace SelectablePlus {
             }
 
             return firstOption;
+        }
+
+        /// <summary>
+        /// Builds navigation data for this group using the provided ISelectableNavigationBuilder.
+        /// </summary>
+        /// <param name="selectableNavigationBuilder">The implementation of ISelectableNavigationBuilder to use</param>
+        public void BuildNavigation(ISelectableNavigationBuilder selectableNavigationBuilder) {
+            if(selectableNavigationBuilder == null) {
+                Debug.LogError("Please provide an ISelectableNavigationBuilder to build the navigation data with!");
+                return;
+            }
+
+            foreach (SelectableOptionBase option in options) {
+                option.ResetNavigation();
+            }
+
+            selectableNavigationBuilder.BuildNavigation(this);
         }
 
     }

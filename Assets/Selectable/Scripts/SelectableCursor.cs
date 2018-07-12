@@ -48,6 +48,9 @@ namespace SelectablePlus {
         //Cached PointerEventData
         private PointerEventData pointerEventData;
 
+        //Previous mouse position, if it didn't change we don't have to do another raycast
+        private Vector2 previousMousePosition;
+
         public bool mouseControls = true;
 
         /// <summary>
@@ -128,7 +131,7 @@ namespace SelectablePlus {
 
         private void Update() {
             currentDirection = GetPressedDirection();
-            if (!currentDirection.Equals(SelectableNavigationDirection.NONE) && currentlySelectedOption.GetNextOption(currentDirection) != null) {
+            if (currentDirection != SelectableNavigationDirection.NONE && currentlySelectedOption.GetNextOption(currentDirection) != null) {
                 SelectOption(currentlySelectedOption.GetNextOption(currentDirection));
             }
 
@@ -145,19 +148,25 @@ namespace SelectablePlus {
         }
 
         private void HandleMouseControls() {
-            UnityEngine.Profiling.Profiler.BeginSample("Mouse Controls");
-
             if (raycaster == null) {
                 Debug.LogError("No graphic raycaster was assigned! Please set one in the inspector as it is required for mouse controls to work!");
                 mouseControls = false;
                 return;
             }
 
+            if (Input.GetMouseButtonDown(0)) {
+                currentlySelectedOption.OkPressed(this);
+            }
+
             if (Input.GetMouseButtonDown(1)) {
                 currentlySelectedOption.CancelPressed(this);
             }
 
-            pointerEventData.position = Input.mousePosition;
+            Vector2 mousePosition = Input.mousePosition;
+            if (mousePosition == previousMousePosition) return;
+
+            previousMousePosition = mousePosition;
+            pointerEventData.position = mousePosition;
             List<RaycastResult> results = new List<RaycastResult>();
 
             raycaster.Raycast(pointerEventData, results);
@@ -167,16 +176,12 @@ namespace SelectablePlus {
             SelectableOptionBase hitOption = results[0].gameObject.GetComponent<SelectableOptionBase>();
             if (hitOption != null && currentGroup.options.Contains(hitOption)) {
                 SelectOption(hitOption);
-                if (Input.GetMouseButtonDown(0)) {
-                    currentlySelectedOption.OkPressed(this);
-                }
             }
-
-            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private void UpdatePosition(Vector3 targetPosition) {
-            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentAnimationVelocity, smoothingTime);
+            if(transform.position != targetPosition)
+                transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentAnimationVelocity, smoothingTime);
         }
 
         private SelectableNavigationDirection GetPressedDirection() {
